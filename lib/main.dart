@@ -41,24 +41,38 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.lightBlueAccent,
       ),
       body: ListView.builder(
+        itemCount: users.length,
         itemBuilder: (context, index) {
           var user = users[index];
-          var email = user["email"];
+          // var name = user['name']['title']['last'];
+          var title = user['name']['title'];
+          // var firstName = user['name']['first'];
+          var lastName = user['name']['last'];
+          var name = '$title $lastName';
+          var email = user['email'];
+          var imageUrl = user['picture']['thumbnail'];
           return ListTile(
-            title: Text(email),
+            leading: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image.network(imageUrl)),
+            title: Text(
+              name.toString(),
+            ),
+            subtitle: Text(email),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: fetchUsers,
         backgroundColor: Colors.lightBlueAccent,
+        child: Icon(Icons.refresh),
       ),
     );
   }
 
   void fetchUsers() async {
     print("Fetch Users Called");
-    var url = "https://randomuser.me/api/?results=10";
+    var url = "https://randomuser.me/api/?results=100";
     var uri = Uri.parse(url);
     var response = await http.get(uri);
     var body = response.body;
