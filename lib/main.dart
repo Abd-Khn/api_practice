@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:api_practice/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<dynamic> users = [];
+  List<User> users = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,35 +39,42 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
           ),
         ),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.black,
       ),
       body: ListView.builder(
         itemCount: users.length,
         itemBuilder: (context, index) {
           var user = users[index];
-          // var name = user['name']['title']['last'];
-          var title = user['name']['title'];
-          // var firstName = user['name']['first'];
-          var lastName = user['name']['last'];
-          var name = '$title $lastName';
-          var email = user['email'];
-          var imageUrl = user['picture']['thumbnail'];
+          var email = user.email;
+          // var color = user.gender == 'male' ? Colors.blue : Colors.pink;
           return ListTile(
-            leading: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Image.network(imageUrl)),
-            title: Text(
-              name.toString(),
-            ),
-            subtitle: Text(email),
+            title: Text("${user.name.title} ${user.name.last}"),
+            subtitle: Text(user.email),
+
+            // tileColor: color,
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchUsers,
-        backgroundColor: Colors.lightBlueAccent,
-        child: Icon(Icons.refresh),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SizedBox(
+          width: 200, // Adjust the width as needed
+          height: 50, // Adjust the height as needed
+          child: ElevatedButton(
+            onPressed: fetchUsers,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.lightBlueAccent,
+              padding:
+                  EdgeInsets.all(15), // Increase padding for a bigger button
+            ),
+            child: Text(
+              "Refresh list",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -77,8 +85,25 @@ class _MyHomePageState extends State<MyHomePage> {
     var response = await http.get(uri);
     var body = response.body;
     var json = jsonDecode(body);
+
+    final results = json['results'] as List<dynamic>;
+    final transformed = results.map((e) {
+      final name = UserName(
+        title: e['name']['title'],
+        first: e['name']['first'],
+        last: e['name']['last'],
+      );
+      return User(
+        cell: e['cell'],
+        email: e['email'],
+        gender: e['gender'],
+        phone: e['phone'],
+        nat: e['nat'],
+        name: name,
+      );
+    }).toList();
     setState(() {
-      users = json['results'];
+      users = transformed;
     });
     print("Fetch Users Completed");
   }
