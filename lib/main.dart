@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,44 +27,45 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var client = http.Client();
-
-  LoadData() async {
-    String url = 'https://randomuser.me/api/?results=5';
-    Uri uri = Uri.parse(url);
-    // Map<String, String> header = {"id": ""};
-    // Map<String, dynamic> body = {"id": ""};
-    Response response = await client.get(uri);
-
-    if (response.statusCode == 200) {
-      print("");
-    } else if (response.statusCode == 404) {
-      print("Sorry Not Found");
-    }
-
-    print("responses ${response.statusCode}");
-    print("responses ${response.body}");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    LoadData();
-  }
-
+  List<dynamic> users = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("APIs Practice"),
-      ),
-      body: Container(
-        child: Text(
-          "Data",
-          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+        title: Center(
+          child: Text(
+            "APIs Practice",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+          ),
         ),
-        padding: EdgeInsets.all(20),
+        backgroundColor: Colors.lightBlueAccent,
+      ),
+      body: ListView.builder(
+        itemBuilder: (context, index) {
+          var user = users[index];
+          var email = user["email"];
+          return ListTile(
+            title: Text(email),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: fetchUsers,
+        backgroundColor: Colors.lightBlueAccent,
       ),
     );
+  }
+
+  void fetchUsers() async {
+    print("Fetch Users Called");
+    var url = "https://randomuser.me/api/?results=10";
+    var uri = Uri.parse(url);
+    var response = await http.get(uri);
+    var body = response.body;
+    var json = jsonDecode(body);
+    setState(() {
+      users = json['results'];
+    });
+    print("Fetch Users Completed");
   }
 }
