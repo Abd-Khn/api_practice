@@ -1,10 +1,10 @@
 class User {
-  // final String name;
   final String gender;
   final String email;
   final String phone;
   final String cell;
   final String nat;
+  final String picture;
   final UserName name;
 
   User(
@@ -13,7 +13,8 @@ class User {
       required this.phone,
       required this.cell,
       required this.nat,
-      required this.name});
+      required this.name,
+      required this.picture});
 }
 
 class UserName {

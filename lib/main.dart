@@ -48,6 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
           var email = user.email;
           // var color = user.gender == 'male' ? Colors.blue : Colors.pink;
           return ListTile(
+            leading: CircleAvatar(
+              backgroundImage:
+                  NetworkImage(user.picture), // Load profile picture
+            ),
             title: Text("${user.name.title} ${user.name.last}"),
             subtitle: Text(user.email),
 
@@ -99,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         gender: e['gender'],
         phone: e['phone'],
         nat: e['nat'],
+        picture: e['picture']['large'],
         name: name,
       );
     }).toList();
